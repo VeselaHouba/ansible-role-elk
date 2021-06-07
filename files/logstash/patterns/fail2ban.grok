@@ -1,0 +1,2 @@
+F2B_01 %{TIMESTAMP_ISO8601:[fail2ban][timestamp]} fail2ban\.%{DATA:[fail2ban][module]}%{SPACE}\[%{NUMBER:[fail2ban][pid]}\]:%{DATA:[fail2ban][severity]}%{SPACE}\[%{DATA:[fail2ban][jail]}\] %{DATA:[fail2ban][action]} %{IP:[fail2ban][ip]}( - %{TIMESTAMP_ISO8601:[fail2ban][found][timestamp]})?
+F2B %{F2B_01}

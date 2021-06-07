@@ -1,0 +1,3 @@
+PHPRC_TIMESTAMP %{MONTHDAY}-%{MONTH}-%{YEAR} %{TIME}
+PHPRC_01 \[%{PHPRC_TIMESTAMP:[phprc][timestamp]}\] %{DATA:[phprc][severity]}: \[pool %{DATA:[phprc][project_name]}\] %{GREEDYDATA:[phprc][message]}
+PHPRC %{PHPRC_01}

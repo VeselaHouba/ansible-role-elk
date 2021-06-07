@@ -1,0 +1,47 @@
+ZIMBRA_DATE %{YEAR}[\/_]%{MONTHNUM}[\/_]%{MONTHDAY}
+POSTFIX_QUEUEID ([0-9A-F]{6,}|[0-9a-zA-Z]{12,})
+ZIMBRA_COMPONENT Timer-Zimbra|Junk-NotJunk-Handler|MailboxPurge|btpool|pool|LmtpServer|ImapServer|ImapSSLServer|Imap-Idle-Proxy-ImapServer|Pop3Server|Pop3SSLServer|ScheduledTask|AnonymousIoService|CloudRoutingReaderThread|GC|SocketAcceptor|Thread|Index|FileLogWriter.FsyncThread|IncomingDirectorySweeper|mailboxd.csv|main|SyncGalGroup|%{SPACE}Activity Thread|imapd_stats.csv|%{WORD}
+
+ZIMBRA_MAILBOX  %{TIMESTAMP_ISO8601:zimbra_timestamp} %{DATA:zimbra_loglevel} \[%{ZIMBRA_COMPONENT:zimbra_component}(?:-%{NONNEGINT:zimbra_thread_number}(?::%{DATA:zimbra_soap_request})?)?\] \[%{DATA:zimbra_account}\] %{GREEDYDATA:zimbra_message}
+ZIMBRA_REMOTE  %{TIMESTAMP_ISO8601:zimbra_timestamp} %{DATA:zimbra_loglevel} \[{%{DATA:zimbra_component}: %{HOSTNAME:zimbra_hostname}->%{DATA:zimbra_mailaddress}:%{NONNEGINT:zimbra_port}}-%{GREEDYDATA:zimbra_status} \[%{DATA:zimbra_account}\] %{GREEDYDATA:zimbra_message}
+
+ZIMBRA_TRACE_ID        (?<zimbra_trace_log>^ExceptionId:.*)
+ZIMBRA_TRACE_CAUSED_BY (?<zimbra_trace_log>^Caused by:.*)
+ZIMBRA_TRACE_ERROR     (?<zimbra_trace_log>^.*Exception: .*)
+ZIMBRA_TRACE_NEST      (?<zimbra_trace_log>^.*nested exception is: .*)
+ZIMBRA_TRACE_CODE      (?<zimbra_trace_log>^Code:.*)
+ZIMBRA_TRACE_OTHERS    (?<zimbra_trace_log>^\s+at .*)
+ZIMBRA_TRACE_MORE      (?<zimbra_trace_log>^\s+... .* more)
+ZIMBRA_TRACE           %{ZIMBRA_TRACE_CAUSED_BY}|%{ZIMBRA_TRACE_ID}|%{ZIMBRA_TRACE_CODE}|%{ZIMBRA_TRACE_OTHERS}|%{ZIMBRA_TRACE_MORE}|%{ZIMBRA_TRACE_ERROR}|%{ZIMBRA_TRACE_NEST}
+
+ZIMBRA_MULTILINE       (?<zimbra_message>^bytesConsumed .*)
+
+ZIMBRA_ACCOUNT_1 ip=%{DATA:zimbra_ip};oip=%{DATA:zimbra_oip};via=%{DATA:zimbra_via};
+ZIMBRA_ACCOUNT_2 name=%{DATA:zimbra_user};mid=%{NUMBER:zimbra_mid};ip=%{DATA:zimbra_ip};
+ZIMBRA_ACCOUNT_3 (name=%{DATA:zimbra_user};)?(mid=%{NUMBER:zimbra_mid};)?(oip=%{DATA:zimbra_oip}(, %{DATA:zimbra_ip})?;)?(oproto=%{DATA:zimbra_proto};)?(port=%{NUMBER:zimbra_port};)?(ua=%{DATA:zimbra_ua};soapId=%{DATA:zimbra_soapId};)?
+ZIMBRA_ACCOUNT %{ZIMBRA_ACCOUNT_1}|%{ZIMBRA_ACCOUNT_2}|%{ZIMBRA_ACCOUNT_3}
+HOSTPORT2 %{IPORHOST}:%{POSINT}
+
+ZIMBRA_ACCESS_LOG_OLD %{IPORHOST:zimbra_clientip}:%{POSINT:zimbra_clientport} (?:-|%{NGUSER:zimbra_ident}) (?:-|%{NGUSER:zimbra_auth}) \[%{HTTPDATE:zimbra_timestamp}\]%{SPACE}"%{WORD:zimbra_method}%{SPACE}%{URI:zimbra_request} HTTP/%{NUMBER:zimbra_httpversion}" %{NUMBER:zimbra_response} (?:%{NUMBER:zimbra_bytes}|-) (?:"(?:%{URI:zimbra_referrer}|-)"|%{QS:zimbra_referrer}) %{QS:zimbra_agent} "(?:%{HOSTPORT2:zimbra_upstream}|-)" "%{HOSTPORT2:zimbra_server}"
+ZIMBRA_ACCESS_LOG %{IPORHOST:zimbra_clientip}(:%{POSINT:zimbra_clientport})?(, %{IPORHOST:zimbra_clientip2})? (?:-|%{NGUSER:zimbra_ident}) (?:-|%{NGUSER:zimbra_auth}) \[%{HTTPDATE:zimbra_timestamp}\]%{SPACE}"%{WORD:zimbra_method}%{SPACE}(?:%{URI:zimbra_request}|%{URIPATHPARAM:zimbra_request}) HTTP/%{NUMBER:zimbra_httpversion}" %{NUMBER:zimbra_response} (?:%{NUMBER:zimbra_bytes}|-)( (?:"(?:%{URI:zimbra_referrer}|-)"|%{QS:zimbra_referrer}) %{QS:zimbra_agent} ("(?:%{HOSTPORT2:zimbra_upstream}|-)" "%{HOSTPORT2:zimbra_server}")?)?
+
+ZIMBRA_TIMESTAMP %{ZIMBRA_DATE}[%{SPACE}-]%{TIME}
+ZIMBRA_NGINX_LOG_1 %{ZIMBRA_TIMESTAMP:zimbra_timestamp}%{SPACE}\[%{DATA:zimbra_loglevel}\]%{SPACE}%{DATA}\:%{SPACE}\*%{NUMBER}%{SPACE}%{GREEDYDATA:zimbra_message}
+ZIMBRA_NGINX_LOG_2 %{ZIMBRA_TIMESTAMP:zimbra_timestamp}%{SPACE}\[%{DATA:zimbra_loglevel}\]%{SPACE}%{DATA}\:%{SPACE}\*%{NUMBER}%{SPACE}%{DATA:zimbra_event},%{SPACE}client: %{HOSTPORT2:zimbra_client}, server: %{HOSTPORT2:zimbra_server}, login: "%{DATA:zimbra_login}", upstream: %{GREEDYDATA:zimbra_upstream}
+ZIMBRA_NGINX_LOG %{ZIMBRA_NGINX_LOG_2}|%{ZIMBRA_NGINX_LOG_1}
+
+ZIMBRA_CLAMD_TIMESTAMP %{DAY} %{MONTH}%{SPACE}%{MONTHDAY}%{SPACE}%{TIME}%{SPACE}%{YEAR}
+ZIMBRA_CLAMD_LOG %{ZIMBRA_CLAMD_TIMESTAMP:zimbra_timestamp}%{SPACE}->%{SPACE}%{GREEDYDATA:zimbra_message}
+ZIMBRA_TRACE_LOG_DATE %{DATA}\.%{ZIMBRA_DATE:zimbra_tracedate}
+ZIMBRA_TRACE_LOG_2 %{TIME:zimbra_tracetime}\:%{DATA:zimbra_thread}\:%{GREEDYDATA:zimbra_message}
+###
+ZIMBRA_NGINX %{ZIMBRA_ACCESS_LOG}|%{ZIMBRA_NGINX_LOG}
+ZIMBRA_MAILBOX_LOG %{ZIMBRA_MAILBOX}|%{ZIMBRA_REMOTE}|%{ZIMBRA_TRACE_LOG_2}|%{ZIMBRA_MULTILINE}|%{ZIMBRA_CLAMD_LOG}
+
+### /var/log/zimbra.log
+ZIMBRA_ZLOG_TIMESTAMP %{MONTH}%{SPACE}%{MONTHDAY}%{SPACE}%{TIME}
+ZIMBRA_ZLOG_1 %{ZIMBRA_ZLOG_TIMESTAMP:zimbra_timestamp} %{HOSTNAME:zimbra_hostname} %{DATA:zimbra_process}\[%{NUMBER}\]: (%{DATA}) %{DATA:zimbra_protocol} %{DATA:zimbra_hostport} %{GREEDYDATA:zimbra_message}
+ZIMBRA_ZLOG_2 %{ZIMBRA_ZLOG_TIMESTAMP:zimbra_timestamp} %{HOSTNAME:zimbra_hostname} %{DATA:zimbra_process}\[%{NUMBER}\]: %{POSTFIX_QUEUEID:postfix_queueid}: %{GREEDYDATA:zimbra_message}
+ZIMBRA_ZLOG_3 %{ZIMBRA_ZLOG_TIMESTAMP:zimbra_timestamp} %{HOSTNAME:zimbra_hostname} %{DATA:zimbra_process}\[%{NUMBER}\]: %{GREEDYDATA:zimbra_message}
+ZIMBRA_ZLOG_4 \[%{ZIMBRA_TIMESTAMP:zimbra_timestamp}%{SPACE}-%{SPACE}%{DATA:zimbra_process}\]%{SPACE}\[%{DATA:zimbra_service}\]%{SPACE}%{DATA:zimbra_loglevel}:%{SPACE}%{GREEDYDATA:zimbra_message}
+ZIMBRA_ZLOG %{ZIMBRA_ZLOG_1}|%{ZIMBRA_ZLOG_2}|%{ZIMBRA_ZLOG_3}|%{ZIMBRA_ZLOG_4}

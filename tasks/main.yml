@@ -1,0 +1,52 @@
+---
+# - name: Install docker
+#   include_role:
+#     name: veselahouba.docker
+
+- name: Upload logstash config
+  copy:
+    src: logstash/
+    dest: "{{ elk_data_dir }}/logstash/"
+  notify: Restart logstash
+
+- name: Upload elastalert config
+  copy:
+    src: elastalert/
+    dest: "{{ elk_data_dir }}/elastalert/"
+  notify: Restart elastalert
+
+- name: Prepare dir for Elasticsearch data
+  file:
+    path: "{{ elk_data_dir }}/elasticsearch/"
+    state: directory
+    mode: 0777
+
+- name: Apply elasticsearch requirements
+  sysctl:
+    name: vm.max_map_count
+    value: "262144"
+
+- name: Generate string from list of backends
+  set_fact:
+    elk_seed_hosts: "{{ elk_seed_hosts|d('') + hostvars[item].ansible_host|d(hostvars[item].inventory_hostname) + (',' if not ansible_loop.last else '') }}"
+  with_items: "{{ groups[elk_group_name] }}"
+  loop_control:
+    extended: true
+  when: elk_cluster
+
+- name: Upload docker-compose
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ elk_data_dir }}/docker-compose.yml"
+
+- name: Deploy docker compose
+  include_role:
+    name: veselahouba.docker_container
+  vars:
+    docker_composes: "{{ elk_docker_compose }}"
+
+- name: Deploy logstash cleanup policy
+  include_tasks: logstash_cleanup_policy.yml
+  when:
+    - elk_deploy_logstash
+    - elk_deploy_elasticsearch

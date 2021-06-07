@@ -1,0 +1,79 @@
+---
+# Alert when the rate of events exceeds a threshold
+
+# (Optional)
+# Elasticsearch host
+# es_host: elasticsearch.example.com
+
+# (Optional)
+# Elasticsearch port
+# es_port: 14900
+
+# (OptionaL) Connect with SSL to Elasticsearch
+# use_ssl: True
+
+# (Optional) basic-auth username and password for Elasticsearch
+# es_username: someusername
+# es_password: somepassword
+
+# (Required)
+# Rule name, must be unique
+name: Postfix from frequency check
+
+# (Required)
+# Type of alert.
+# the frequency rule type alerts when num_events events occur with timeframe time
+type: frequency
+
+# (Required)
+# Index to search, wildcard supported
+index: logstash-*
+
+# (Required, frequency specific)
+# Alert when this many documents matching the query occur within a timeframe
+num_events: 100
+
+# (Required, frequency specific)
+# num_events must occur within this amount of time to trigger an alert
+timeframe:
+  hours: 1
+
+filter:
+  - query_string:
+      query: "postfix_from: *"
+
+query_key:
+  - postfix_from
+
+include:
+  - postfix_from
+  - host.name
+
+alert_subject: "Postfix monitor on {}"
+alert_subject_args:
+  - host.name
+
+alert_text: |-
+  A suspicious number of mails seen in last 60 minutes
+
+  Posfix_From: {}
+  Threshold: 100
+  Host: {}
+  Dashboard: <https://YOUR_DOMAIN_HERE/app/dashboards#/view/DASHBOARD_ID?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-24h,to:now))&_a=(description:'',filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,key:postfix_from.keyword,negate:!f,params:(query:'{}'),type:phrase),query:(match_phrase:(postfix_from.keyword:'{}')))),fullScreenMode:!f,options:(darkTheme:!f,hidePanelTitles:!f,useMargins:!t),query:(language:kuery,query:''),timeRestore:!f,title:'%5BFilebeat%20Postfix%5D%20Overview',viewMode:view)|Filebeat Postfix>
+
+alert_text_args:
+  - postfix_from
+  - host.name
+  - postfix_from
+  - postfix_from
+
+# The alert is use when a match is found
+alert:
+  - slack
+
+slack_webhook_url: "YOUR_HOOK_HERE"
+slack_username_override: "ElastAlert"
+slack_channel_override: "#channel_name"
+
+# Alert body only cointains a title and text
+alert_text_type: alert_text_only

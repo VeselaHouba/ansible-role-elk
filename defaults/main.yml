@@ -1,0 +1,29 @@
+---
+elk_data_dir: /opt/docker/elk
+elk_version: 7.13.1
+
+#### Cluster-related variables. Can be ignored in single-node setup (default)####
+# should ELK expect to be in clustered?
+elk_cluster: false
+# put all your backends in this group in your ansible inventory
+elk_group_name: elk
+# pick one initial master to rule them all
+elk_master_host: elk-master.domain.com
+
+#### Config related variables ####
+# You can override source files paths with your own config files
+elk_logstash_conf_dir: logstash
+elk_elastalert_conf_dir: elastalert
+
+#### Services to deploy ####
+elk_deploy_elasticsearch: true
+elk_deploy_logstash: true
+elk_deploy_kibana: true
+elk_deploy_cerebro: true
+elk_deploy_elastalert: true
+
+#### Advanced variables ####
+elk_docker_compose:
+  - name: elk
+    project_src: "{{ elk_data_dir }}"
+elk_elastic_memory: 3g

@@ -1,0 +1,12 @@
+---
+- name: Restart logstash
+  docker_container:
+    container_default_behavior: no_defaults
+    name: logstash
+    restart: true
+
+- name: Restart elastalert
+  docker_container:
+    container_default_behavior: no_defaults
+    name: elastalert
+    restart: true

@@ -1,0 +1,41 @@
+---
+- name: Slurp cleanup policy
+  slurp:
+    src: "{{ elk_data_dir }}/logstash/index_management/logstash-cleanup.json"
+  register: slurpik
+
+- name: Wait for elasticsearch to start
+  wait_for:
+    port: 9200
+    host: localhost
+    timeout: 300
+
+- name: Load cleanup policy
+  failed_when: false
+  run_once: true
+  uri:
+    url: http://localhost:9200/_ilm/policy/logstash-cleanup
+    method: PUT
+    body: "{{ slurpik.content|b64decode }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+
+- name: Apply cleanup policy to existing indices
+  failed_when: false
+  tags: logstash
+  run_once: true
+  uri:
+    url: http://localhost:9200/logstash-*/_settings
+    method: PUT
+    body: >
+      {
+        "index": {
+          "lifecycle": {
+            "name": "logstash-cleanup"
+          }
+        }
+      }
+    body_format: json
+    headers:
+      Content-Type: "application/json"

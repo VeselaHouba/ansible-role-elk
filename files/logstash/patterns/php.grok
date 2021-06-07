@@ -1,0 +1,3 @@
+PHP_01 Got error 'PHP message: PHP %{DATA:[ws][php][loglevel]}:%{SPACE}%{GREEDYDATA:[ws][php][message]}'
+PHP_02 Got error 'PHP message: %{GREEDYDATA:[ws][php][message]}'
+PHP %{PHP_01}|%{PHP_02}

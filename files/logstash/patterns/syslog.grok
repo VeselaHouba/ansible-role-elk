@@ -1,0 +1,4 @@
+SLPROG %{PROG:[syslog][program]}(?:\[%{POSINT:[syslog][pid]}\])?
+SLBASE2 (?:%{SYSLOGTIMESTAMP:[syslog][timestamp]}|%{TIMESTAMP_ISO8601:[syslog][timestamp]}) (?:%{SYSLOGFACILITY} )?%{SYSLOGHOST:[syslog][logsource]} %{SLPROG}:
+SYSLOG_01 %{SLBASE2} %{GREEDYDATA:[syslog][message]}
+SYSLOG %{SYSLOG_01}

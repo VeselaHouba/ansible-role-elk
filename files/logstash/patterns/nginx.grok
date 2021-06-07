@@ -1,0 +1,10 @@
+NGUSERNAME [a-zA-Z\.\@\-\+_%]+
+NGUSER %{NGUSERNAME}
+NGINX_ACC_01 %{IPORHOST:[ws][access][remote_ip]} - %{DATA:[ws][access][user_name]} \[%{HTTPDATE:[ws][access][timestamp]}\] \"%{WORD:[ws][access][method]} %{DATA:[ws][access][url]} HTTP/%{NUMBER:[ws][access][http_version]}\" %{NUMBER:[ws][access][response_code]} %{NUMBER:[ws][access][body_sent][bytes]} \"%{DATA:[ws][access][referrer]}\" \"%{DATA:[ws][access][agent]}\" \"%{DATA:[ws][access][xforwardedfor]}\"
+NGINX_ACC_02 %{IPORHOST:[ws][access][remote_ip]} - %{DATA:[ws][access][user_name]} \[%{HTTPDATE:[ws][access][timestamp]}\] \"%{WORD:[ws][access][method]} %{DATA:[ws][access][url]} HTTP/%{NUMBER:[ws][access][http_version]}\" %{NUMBER:[ws][access][response_code]} %{NUMBER:[ws][access][body_sent][bytes]} rt=%{NUMBER:[ws][access][request_time]:float} urt=(-|%{NUMBER:[ws][access][upstream_response_time]:float}) \"%{DATA:[ws][access][referrer]}\" \"%{DATA:[ws][access][agent]}\" \"%{DATA:[ws][access][xforwardedfor]}\"
+
+NGINX_ERR_TS (\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2})
+NGINX_ERR_01 %{NGINX_ERR_TS:[ws][error][timestamp]} \[%{DATA:[ws][error][severity]}\] (%{NUMBER}#%{NUMBER}: \*%{NUMBER}|\*%{NUMBER}) %{DATA:[ws][error][message]}(?:, client: %{IP:[ws][error][remote_ip]})(?:, server: %{IPORHOST:[ws][error][server]})(?:, request: %{QS:[ws][error][request]})?(?:, host: %{QS:[ws][error][host]})?(?:, referrer: \"%{URI:[ws][error][referrer]})?
+
+NGINX_ACC %{NGINX_ACC_01}|%{NGINX_ACC_02}
+NGINX_ERR %{NGINX_ERR_01}

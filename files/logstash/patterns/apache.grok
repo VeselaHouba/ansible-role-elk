@@ -1,0 +1,8 @@
+APACHE_ACC_BASE %{IPORHOST:[ws][access][remote_ip]} %{USER:[ws][access][user_name]} %{USER:[ws][access][auth]} \[%{HTTPDATE:[ws][access][timestamp]}\] "(?:%{WORD:[ws][access][method]} %{NOTSPACE:[ws][access][url]}(?: HTTP/%{NUMBER:[ws][access][http_version]})?|%{DATA:[ws][access][rawrequest]})" %{NUMBER:[ws][access][response_code]} (?:%{NUMBER:[ws][access][body_sent][bytes]}|-)
+APACHE_ACC_01 %{APACHE_ACC_BASE} %{QS:[ws][access][referrer]} %{QS:[ws][access][agent]}
+
+APACHE_ERROR_TS %{DAY} %{MONTH} %{MONTHDAY} %{TIME} %{YEAR}
+APACHE_ERR_01 \[%{APACHE_ERROR_TS:[ws][error][timestamp]}\] \[%{DATA:[ws][error][module]}:%{DATA:[ws][error][severity]}\] \[pid %{NUMBER:[ws][error][pid]}:tid %{NUMBER:[ws][error][tid]}\]( %{DATA:[ws][error][reason]}:)? \[client %{IP:[ws][error][remote_ip]}:%{NUMBER}\] %{DATA:[ws][error][code]}: %{GREEDYDATA:[ws][error][message]}
+
+APACHE_ACC %{APACHE_ACC_01}
+APACHE_ERR %{APACHE_ERR_01}

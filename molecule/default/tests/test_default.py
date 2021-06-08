@@ -24,7 +24,7 @@ def test_docker_container_start(host):
         assert '3.12.0' in c.stdout
 
 
-def test_diskover_running(host):
+def test_services_running(host):
     c = host.run('docker ps')
     assert 'logstash' in c.stdout
     assert 'elasticsearch' in c.stdout

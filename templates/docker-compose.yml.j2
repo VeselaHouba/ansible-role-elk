@@ -27,9 +27,9 @@ services:
     networks:
       - elastic
     ports:
-      - 127.0.0.1:9200:9200
+      - {{ elk_listen_ip }}:9200:9200
       {% if elk_cluster %}
-      - 9300:9300
+      - {{ elk_listen_ip}}:9300:9300
       {% endif %}
 {% endif %}
 {% if elk_deploy_logstash %}
@@ -43,7 +43,7 @@ services:
       - "{{ elk_data_dir }}/logstash/index_management:/usr/share/logstash/index_management"
       - "{{ elk_data_dir }}/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml"
     ports:
-      - 5044:5044
+      - {{ elk_listen_ip}}:5044:5044
     networks:
       - elastic
     command: --config.reload.automatic
@@ -53,7 +53,7 @@ services:
     image: docker.elastic.co/kibana/kibana:{{ elk_version }}
     container_name: kibana
     ports:
-      - 5601:5601
+      - {{ elk_listen_ip}}:5601:5601
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
@@ -66,7 +66,7 @@ services:
     image: lmenezes/cerebro
     container_name: cerebro
     ports:
-      - 9000:9000
+      - {{ elk_listen_ip}}:9000:9000
     networks:
       - elastic
 {% endif %}

@@ -47,6 +47,8 @@ services:
     networks:
       - elastic
     command: --config.reload.automatic
+    depends_on:
+      - elasticsearch
 {% endif %}
 {% if elk_deploy_kibana %}
   kibana:
@@ -60,6 +62,8 @@ services:
       KIBANA_AUTOCOMPLETETERMINATEAFTER: 5000000
     networks:
       - elastic
+    depends_on:
+      - elasticsearch
 {% endif %}
 {% if elk_deploy_cerebro %}
   cerebro:
@@ -75,7 +79,7 @@ services:
     image: bitsensor/elastalert:3.0.0-beta.1
     container_name: elastalert
     ports:
-      - 2030:3030
+      - {{ elk_listen_ip}}:2030:3030
     volumes:
       - "{{ elk_data_dir }}/elastalert/elastalert.yaml:/opt/elastalert/config.yaml"
       - "{{ elk_data_dir }}/elastalert/elastalert.yaml:/opt/elastalert-server/config/elastalert.yaml"
@@ -83,6 +87,8 @@ services:
       - "{{ elk_data_dir }}/elastalert/rules:/opt/elastalert/rules"
     networks:
       - elastic
+    depends_on:
+      - elasticsearch
 {% endif %}
 networks:
   elastic:

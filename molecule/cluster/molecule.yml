@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: hetznercloud
+platforms:
+  - name: ${REPO_NAME}-${MOLECULE_IMAGE}-${REF}-node1
+    server_type: cx31
+    image: ${MOLECULE_IMAGE}
+    groups:
+      - elk
+  - name: ${REPO_NAME}-${MOLECULE_IMAGE}-${REF}-node2
+    server_type: cx31
+    image: ${MOLECULE_IMAGE}
+    groups:
+      - elk
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      elk:
+        elk_cluster: true
+        elk_group_name: elk
+        elk_master_host: ${REPO_NAME}-${MOLECULE_IMAGE}-${REF}-node1
+verifier:
+  name: testinfra

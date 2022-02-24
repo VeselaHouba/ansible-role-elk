@@ -1,32 +1,24 @@
 #!/usr/bin/env bash
-if [ "${MOLECULE_IMAGE}" == "" ]; then
-  echo "Variable MOLECULE_IMAGE not set, using debian-10"
-  MOLECULE_IMAGE=debian-10
-fi
-if [ "${HCLOUD_TOKEN}" == "" ]; then
-  echo "Variable HCLOUD_TOKEN has to be set"
-  exit 1
-fi
-
-REPO_NAME="$(basename "${PWD}")"
-echo Using repo "${REPO_NAME}"
-export REPO_NAME MOLECULE_IMAGE
-
 docker \
   run \
   --rm \
-  -it \
+  -ti \
   -v "$(pwd):/tmp/$(basename "${PWD}")" \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -w "/tmp/$(basename "${PWD}")" \
-  -e MOLECULE_NO_LOG=false \
-  -e MOLECULE_IMAGE \
-  -e MOLECULE_DOCKER_COMMAND \
   -e HCLOUD_TOKEN \
+  -e MOLECULE_IMAGE \
+  -e MOLECULE_NO_LOG=false \
   -e REF=manual \
-  -e REPO_NAME \
+  -e OS_VERSION="${MOLECULE_IMAGE}" \
+  -e REPO_NAME="$(basename "${PWD}")" \
   veselahouba/molecule bash -c "
+  shellcheck_wrapper && \
   flake8 && \
   yamllint . && \
   ansible-lint && \
+  cp -a ./ /tmp/role/ && \
+  cd /tmp/role && \
+  curl https://raw.githubusercontent.com/VeselaHouba/molecule/master/molecule-hetznercloud/pull_files.sh > ci/pull_files.sh && \
+  bash ci/pull_files.sh && \
   molecule ${*}"

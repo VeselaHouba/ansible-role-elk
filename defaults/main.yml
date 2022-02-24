@@ -1,6 +1,6 @@
 ---
 elk_data_dir: /opt/docker/elk
-elk_version: 7.13.1
+elk_version: 7.17.0
 
 #### Cluster-related variables. Can be ignored in single-node setup (default)####
 # should ELK expect to be in clustered?

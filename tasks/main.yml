@@ -1,14 +1,16 @@
 ---
 - name: Upload logstash config
   copy:
-    src: logstash/
+    src: "{{ elk_logstash_conf_dir }}/"
     dest: "{{ elk_data_dir }}/logstash/"
+    mode: 0755
   notify: Restart logstash
 
 - name: Upload elastalert config
   copy:
     src: elastalert/
     dest: "{{ elk_data_dir }}/elastalert/"
+    mode: 0755
   notify: Restart elastalert
 
 - name: Prepare dir for Elasticsearch data
@@ -34,6 +36,7 @@
   template:
     src: docker-compose.yml.j2
     dest: "{{ elk_data_dir }}/docker-compose.yml"
+    mode: 0755
 
 - name: Deploy docker compose
   include_role:

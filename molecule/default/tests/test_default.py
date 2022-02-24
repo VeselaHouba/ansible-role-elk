@@ -1,5 +1,7 @@
 import os
 
+import yaml
+
 import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
@@ -35,8 +37,9 @@ def test_services_running(host):
 
 
 def test_correct_version_running(host):
+    stream = host.file('/tmp/ansible-vars.yml').content
+    ansible_vars = yaml.load(stream, Loader=yaml.FullLoader)
+    def_version = ansible_vars['elk_version']
     c = host.run('curl http://localhost:9200')
-    version = host.ansible(
-        'include_vars', '../../defaults/main.yml'
-    )['ansible_facts']['elk_version']
-    assert version in c.stdout
+    assert c.rc == 0
+    assert def_version in c.stdout

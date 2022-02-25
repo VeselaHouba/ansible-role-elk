@@ -1,7 +1,6 @@
 import os
-
 import yaml
-
+import time
 import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
@@ -40,12 +39,24 @@ def test_correct_version_running(host):
     stream = host.file('/tmp/ansible-vars.yml').content
     ansible_vars = yaml.load(stream, Loader=yaml.FullLoader)
     def_version = ansible_vars['elk_version']
-    c = host.run('curl http://localhost:9200')
+    c = host.run('wget -qcO - --retry-connrefused localhost:9200')
     assert c.rc == 0
     assert def_version in c.stdout
 
 
 def test_cluster_status(host):
-    c = host.run('curl localhost:9200/_cluster/health?pretty')
+    for i in range(10):
+        c = host.run(
+            'wget -qcO - --retry-connrefused ' +
+            'localhost:9200/_cluster/health?pretty'
+        )
+        if '"status" : "yellow"' in c.stdout:
+            time.sleep(30)
+        else:
+            break
+    c = host.run(
+        'wget -qcO - --retry-connrefused ' +
+        'localhost:9200/_cluster/health?pretty'
+    )
     assert '"number_of_nodes" : 2' in c.stdout
     assert '"status" : "green"' in c.stdout

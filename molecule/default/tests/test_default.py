@@ -40,6 +40,6 @@ def test_correct_version_running(host):
     stream = host.file('/tmp/ansible-vars.yml').content
     ansible_vars = yaml.load(stream, Loader=yaml.FullLoader)
     def_version = ansible_vars['elk_version']
-    c = host.run('curl http://localhost:9200')
+    c = host.run('wget -qcO - --retry-connrefused localhost:9200')
     assert c.rc == 0
     assert def_version in c.stdout

@@ -5,6 +5,16 @@
     host: localhost
     timeout: 300
 
+- name: Wait for 200 response code
+  run_once: true
+  uri:
+    url: http://localhost:9200
+    method: GET
+  register: _result
+  until: _result.status == 200
+  retries: 30
+  delay: 5
+
 - name: Load cleanup policy
   run_once: true
   uri:

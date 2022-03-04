@@ -10,7 +10,7 @@ docker \
   -e MOLECULE_IMAGE \
   -e MOLECULE_NO_LOG=false \
   -e REF=manual \
-  -e OS_VERSION="${MOLECULE_IMAGE}" \
+  -e OS_VERSION="${MOLECULE_IMAGE//./_}" \
   -e REPO_NAME="$(basename "${PWD}")" \
   veselahouba/molecule bash -c "
   shellcheck_wrapper && \

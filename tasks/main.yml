@@ -5,6 +5,7 @@
     dest: "{{ elk_data_dir }}/logstash/"
     mode: 0755
   notify: Restart logstash
+  tags: elk_logstash
 
 - name: Upload elastalert config
   copy:

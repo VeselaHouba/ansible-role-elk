@@ -11,6 +11,12 @@ elk_group_name: elk
 elk_master_host: elk-master.domain.com
 # services will listen on following IP.
 elk_listen_ip: 0.0.0.0
+# ports for docker -> logstash forwarding
+elk_logstash_ports:
+  - 514
+  - 5044
+# default timezone for docker containers
+elk_timezone: Europe/Vienna
 
 #### Config related variables ####
 # You can override source files paths with your own config files

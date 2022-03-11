@@ -8,7 +8,7 @@ elk_cluster: false
 # put all your backends in this group in your ansible inventory
 elk_group_name: elk
 # pick one initial master to rule them all
-elk_master_host: elk-master.domain.com
+elk_master_hosts: elk-master.domain.com
 # services will listen on following IP.
 elk_listen_ip: 0.0.0.0
 # ports for docker -> logstash forwarding

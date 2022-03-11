@@ -50,7 +50,7 @@ It's recommended to change `elk_listen_ip: 127.0.0.1` and wrap services with pro
 ```YAML
 elk_cluster: true
 elk_group_name: elk
-elk_master_host: elk-master.domain.com
+elk_master_hosts: elk-master.domain.com
 ```
 1. Install with the same playbook as single-node
 

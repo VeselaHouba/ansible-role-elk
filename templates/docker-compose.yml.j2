@@ -12,7 +12,7 @@ services:
       - cluster.name=es-docker-cluster
       {% if elk_cluster %}
       - discovery.seed_hosts={{ elk_seed_hosts }}
-      - cluster.initial_master_nodes={{ elk_master_host }}
+      - cluster.initial_master_nodes={{ elk_master_hosts }}
       - network.publish_host={{ ansible_default_ipv4.address }}
       {% else %}
       - discovery.type=single-node

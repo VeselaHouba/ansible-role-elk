@@ -60,3 +60,9 @@ def test_cluster_status(host):
     )
     assert '"number_of_nodes" : 2' in c.stdout
     assert '"status" : "green"' in c.stdout
+
+
+def check_kibana_vars(host):
+    c = host.run('docker exec kibana ps -ef')
+    assert c.rc == 0
+    assert '--server.publicBaseUrl=http://some.public.url' in c

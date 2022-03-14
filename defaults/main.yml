@@ -35,3 +35,9 @@ elk_docker_compose:
   - name: elk
     project_src: "{{ elk_data_dir }}"
 elk_elastic_memory: 3g
+elk_kibana_extra_vars: []
+elk_elastic_extra_vars: []
+elk_logstash_extra_vars: []
+# example:
+# elk_kibana_extra_vars:
+#   - SERVER_PUBLICBASEURL=http://some.public.url

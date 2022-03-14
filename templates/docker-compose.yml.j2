@@ -8,8 +8,11 @@ services:
     restart: unless-stopped
     container_name: elasticsearch
     environment:
+      - TZ={{ elk_timezone }}
       - node.name={{ inventory_hostname }}
       - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms{{ elk_elastic_memory }} -Xmx{{ elk_elastic_memory }} -Dlog4j2.formatMsgNoLookups=true
       {% if elk_cluster %}
       - discovery.seed_hosts={{ elk_seed_hosts }}
       - cluster.initial_master_nodes={{ elk_master_hosts }}
@@ -17,9 +20,9 @@ services:
       {% else %}
       - discovery.type=single-node
       {% endif %}
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms{{ elk_elastic_memory }} -Xmx{{ elk_elastic_memory }} -Dlog4j2.formatMsgNoLookups=true"
-      - TZ=Europe/Vienna
+{% for _var in elk_elastic_extra_vars %}
+      - {{ _var }}
+{% endfor %}
     ulimits:
       memlock:
         soft: -1
@@ -40,8 +43,11 @@ services:
     restart: unless-stopped
     container_name: logstash
     environment:
-      - "LS_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true"
-      - TZ=Europe/Vienna
+      - TZ={{ elk_timezone }}
+      - LS_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true
+{% for _var in elk_logstash_extra_vars %}
+      - {{ _var }}
+{% endfor %}
     volumes:
       - "{{ elk_data_dir }}/logstash/cert:/usr/share/logstash/cert"
       - "{{ elk_data_dir }}/logstash/pipeline:/usr/share/logstash/pipeline"
@@ -66,10 +72,13 @@ services:
     ports:
       - {{ elk_listen_ip}}:5601:5601
     environment:
+      - TZ={{ elk_timezone }}
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - KIBANA_AUTOCOMPLETETERMINATEAFTER=5000000
-      - TZ=Europe/Vienna
+{% for _var in elk_kibana_extra_vars %}
+      - {{ _var }}
+{% endfor %}
     networks:
       - elastic
     depends_on:
@@ -102,7 +111,7 @@ services:
     depends_on:
       - elasticsearch
     environment:
-      - TZ=Europe/Vienna
+      - TZ={{ elk_timezone }}
 {% endif %}
 networks:
   elastic:

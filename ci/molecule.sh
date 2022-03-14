@@ -4,13 +4,12 @@ docker \
   --rm \
   -ti \
   -v "$(pwd):/tmp/$(basename "${PWD}")" \
-  -v /var/run/docker.sock:/var/run/docker.sock \
   -w "/tmp/$(basename "${PWD}")" \
   -e HCLOUD_TOKEN \
-  -e MOLECULE_IMAGE \
+  -e MOLECULE_IMAGE="${MOLECULE_IMAGE:-debian-11}" \
+  -e OS_VERSION="${MOLECULE_IMAGE//./_}" \
   -e MOLECULE_NO_LOG=false \
   -e REF=manual \
-  -e OS_VERSION="${MOLECULE_IMAGE//./_}" \
   -e REPO_NAME="$(basename "${PWD}")" \
   veselahouba/molecule bash -c "
   shellcheck_wrapper && \

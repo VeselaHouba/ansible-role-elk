@@ -9,7 +9,7 @@
 
 - name: Upload elastalert config
   copy:
-    src: elastalert/
+    src: "{{ elk_elastalert_conf_dir }}/"
     dest: "{{ elk_data_dir }}/elastalert/"
     mode: 0755
   notify: Restart elastalert

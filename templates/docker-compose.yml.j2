@@ -96,15 +96,13 @@ services:
 {% endif %}
 {% if elk_deploy_elastalert %}
   elastalert:
-    image: bitsensor/elastalert:3.0.0-beta.1
+    image: jertel/elastalert2:2.4.0
     restart: unless-stopped
     container_name: elastalert
     ports:
       - {{ elk_listen_ip}}:2030:3030
     volumes:
       - "{{ elk_data_dir }}/elastalert/elastalert.yaml:/opt/elastalert/config.yaml"
-      - "{{ elk_data_dir }}/elastalert/elastalert.yaml:/opt/elastalert-server/config/elastalert.yaml"
-      - "{{ elk_data_dir }}/elastalert/config.json:/opt/elastalert-server/config/config.json"
       - "{{ elk_data_dir }}/elastalert/rules:/opt/elastalert/rules"
     networks:
       - elastic

@@ -43,3 +43,8 @@ def test_correct_version_running(host):
     c = host.run('wget -qcO - --retry-connrefused localhost:9200')
     assert c.rc == 0
     assert def_version in c.stdout
+
+
+def test_elastalert_connected(host):
+    c = host.run('docker logs elastalert')
+    assert 'Reading index mapping' in c.stdout

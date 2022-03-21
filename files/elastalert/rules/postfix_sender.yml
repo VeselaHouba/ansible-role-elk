@@ -39,8 +39,9 @@ timeframe:
   hours: 1
 
 filter:
-  - query_string:
-      query: "postfix_from: *"
+  - query:
+      query_string:
+        query: "postfix_from: *"
 
 query_key:
   - postfix_from

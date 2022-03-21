@@ -38,6 +38,12 @@ elk_elastic_memory: 3g
 elk_kibana_extra_vars: []
 elk_elastic_extra_vars: []
 elk_logstash_extra_vars: []
+elk_images:
+  elasticsearch: "docker.elastic.co/elasticsearch/elasticsearch:{{ elk_version }}"
+  logstash: "docker.elastic.co/logstash/logstash:{{ elk_version }}"
+  kibana: "docker.elastic.co/kibana/kibana:{{ elk_version }}"
+  cerebro: "lmenezes/cerebro:0.9.4"
+  elastalert: "jertel/elastalert2:2.4.0"
 # example:
 # elk_kibana_extra_vars:
 #   - SERVER_PUBLICBASEURL=http://some.public.url

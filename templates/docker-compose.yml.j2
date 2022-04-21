@@ -58,6 +58,9 @@ services:
 {% for _port in elk_logstash_ports %}
       - {{ elk_listen_ip}}:{{ _port }}:{{ _port }}
 {% endfor %}
+{% for _port in elk_logstash_ports_udp %}
+      - {{ elk_listen_ip}}:{{ _port }}:{{ _port }}/udp
+{% endfor %}
     networks:
       - elastic
     command: --config.reload.automatic

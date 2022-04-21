@@ -15,6 +15,8 @@ elk_listen_ip: 0.0.0.0
 elk_logstash_ports:
   - 514
   - 5044
+elk_logstash_ports_udp:
+  - 514
 # default timezone for docker containers
 elk_timezone: Europe/Vienna
 
